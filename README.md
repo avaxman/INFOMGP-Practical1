@@ -4,9 +4,9 @@ The first exercise will be about simulating a moving and rotating rigid body. Th
 
 1. Implement rigid velocity, position, and orientation integration in a discrete time iteration.
 2. Implement impulse-based collision resolution.
-3. Extend the framework with some chosen effects, such as friction, drag, or 
+3. Extend the framework with some chosen effects, such as friction or drag.  
 
-This is the repository for the skeleton on which you will build your first exercise. Using CMake allows you to work and submit your code in all platforms.
+This is the repository for the skeleton on which you will build your first exercise. Using CMake allows you to work and submit your code in all platforms. The entire environment is in C++, but most of the "nastier" coding parts have been simplified; for the most part, you only need to work in the math.
 
 ##Installation
 
@@ -35,7 +35,7 @@ You do not need to utilize any dependency on your own or install anything other 
 
 All the code you need to update is in the ``practical1`` folder. Please do not attempt to commit any changes to here. <span style="color:red">You may ONLY fork the repository for your convenience and work on it if you can somehow make the forked repository PRIVATE afterwards</span>. Public open-source solutions to the exercise will disqualify the students! submission will be done in the "classical" department style of submission servers.
 
-##The code
+##The coding environment
 
 Most of the action happens in `scene.h`. The main function is:
 
@@ -70,3 +70,36 @@ void updateScene(double timeStep, double CRCoeff, MatrixXd& fullV, MatrixXi& ful
         currTime+=timeStep;
     } 
 ```
+
+The two most important functions are ``integrate()`` and ``handleCollision()``. They all contain a mixture of written code, and code you have to complete. The code you have to complete is always marked as:
+
+```cpp
+/***************
+TODO
+***************/
+```
+
+For the most part, the description of the function will tell you what exactly you need to complete. See summary LINK for the detailed tasks 
+
+###User interface
+
+The program is loaded by giving a TXT file that describes the scene as an argument to the executable. The file should be in the `data` subfolder, which is automatically discovered by the CMake. The format of the file is:
+
+```
+#num_objects
+object1.off     density1     is_fixed1    COM1     o1
+object2.off     density2     is_fixed2    COM2     o2 
+.....
+```
+
+Where:
+
+1. objectX.off - an OFF file describing the geometry of the a triangulated mesh. [Meshlab](http://www.meshlab.net/) can view these files, but their format is pretty straightforward. The object is loaded, and translated to have a center of mass of $(0,0,0)$ in its object coordinates. 
+2. density - the uniform density of the object. The program will automatically compute the mas by the volume.
+3. is_fixed - if the object should be immobile (fixed in space) or not.
+4. COM - the initial position in space where the object would be translated to. That means where the COM is in time $t=0$.
+5. o - the initial orientation of the object, expressed as a quaternion that rotates the geometry to $o*object*inv(o)$ at time $t=0$.
+
+
+
+
