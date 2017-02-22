@@ -1,4 +1,10 @@
-# Skeleton for Practical 1: Rigid-Body Simulation
+# Practical 1: Rigid-Body Simulation
+
+The first exercise will be about simulating a moving and rotating rigid body. The objectives of the practical are:
+
+1. Implement rigid velocity, position, and orientation integration in a discrete time iteration.
+2. Implement impulse-based collision resolution.
+3. Extend the framework with some chosen effects, such as friction, drag, or 
 
 This is the repository for the skeleton on which you will build your first exercise. Using CMake allows you to work and submit your code in all platforms.
 
@@ -28,3 +34,39 @@ You do not need to utilize any dependency on your own or install anything other 
 ##Working with the repository
 
 All the code you need to update is in the ``practical1`` folder. Please do not attempt to commit any changes to here. <span style="color:red">You may ONLY fork the repository for your convenience and work on it if you can somehow make the forked repository PRIVATE afterwards</span>. Public open-source solutions to the exercise will disqualify the students! submission will be done in the "classical" department style of submission servers.
+
+##The code
+
+Most of the action happens in `scene.h`. The main function is:
+
+```cpp
+void updateScene(double timeStep, double CRCoeff, MatrixXd& fullV, MatrixXi& fullT){
+        fullV.conservativeResize(numFullV,3);
+        fullT.conservativeResize(numFullT,3);
+        int currVIndex=0, currFIndex=0;
+        
+        //integrating velocity, position and orientation from forces and previous states
+        for (int i=0;i<rigidObjects.size();i++)
+            rigidObjects[i].integrate(timeStep);
+            
+        //detecting and handling collisions when found
+        //This is done exhaustively: checking every two objects in the scene.
+        double depth;
+        RowVector3d contactNormal, penPosition;
+        for (int i=0;i<rigidObjects.size();i++)
+            for (int j=i+1;j<rigidObjects.size();j++)
+                if (rigidObjects[i].isCollide(rigidObjects[j],depth, contactNormal, penPosition))
+                    handleCollision(rigidObjects[i], rigidObjects[j],depth, contactNormal.normalized(), penPosition,CRCoeff);
+        
+        
+        
+        //Code for updating visualization meshes
+        for (int i=0;i<rigidObjects.size();i++){
+            fullT.block(currFIndex, 0, rigidObjects[i].T.rows(),3)=rigidObjects[i].T.array()+currVIndex;   //need to advance the indices, because every object is indexed independently
+            fullV.block(currVIndex, 0, rigidObjects[i].currV.rows(),3)=rigidObjects[i].currV;
+            currFIndex+=rigidObjects[i].T.rows();
+            currVIndex+=rigidObjects[i].currV.rows();
+        }
+        currTime+=timeStep;
+    } 
+```
