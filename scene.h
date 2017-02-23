@@ -101,8 +101,8 @@ public:
             intPosition(i)=pos.v[i];
         }
         
-        intPosition-=depth*intNormal/2.0;  //to bring it to (current) obj2
         depth=_depth;
+        intPosition-=depth*intNormal/2.0;  //to bring it to (current) obj2
         return !nonintersect;
     }
     
