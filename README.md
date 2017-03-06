@@ -192,6 +192,21 @@ The practical must be done **in pairs**. Doing it alone requires a-priori permis
 
 The practical will be checked during the lecture time of the deadline date. Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. We might need more than the allocated two hours for the lecture time; you will very soon receive a notification. The registration for time slots will appear soon.
 
+##Frequently Asked Questions
+
+Here are detailed answers to common questions. Please read through whenever ou have a problem, since in most cases someone else would have had it as well.
+
+<span style="color:blue">Q:</span> I am getting alignment problems when compiling in Windows
+<span style="color:blue">A:</span> delete everything, and re-install using 64-bit from the start. If you find it doesn't work from the box, do not install other non-related things, or try to alter the cmake, it's wrong. contact the Lecturer.
+
+<span style="color:blue">Q:</span> I have an angular velocity $\vec{\omega}$, how do I integrate it?
+<span style="color:blue">A:</span> There are actually two ways to do that that could be considere "forward Euler". The following is the simplest (radial integration):
+
+1. Get the accumulated rotation: $\delta t \cdot \omega$. (compare to linear $\deltat \cdot \vec{v}$
+2. This is an angle-axis representation of the accumulated rotation. You need a quaternion $\delta q$ that represents this rotation. The simplest way is to use the \emph{exponent} function `QExp` given to you in the code. However, you need to feed it with the imaginary quaternion $QExp(\left(0,\delta t \cdot \omega\right))$.
+3. Apply $\delta$ from the left to $q_t$ (the current orientation) to get $q_{t+\delta t}$ (the new orientation): $q_{t+\delta t} = \delta q \cdot q_t $. remember that you have `QMult` for quaternion multiplication.
+
+
 #Good work!
 
 
