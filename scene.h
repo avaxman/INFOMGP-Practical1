@@ -124,8 +124,11 @@ public:
         /***************
          TODO
          ***************/
-         //integrate velocity, update center of mass
-         //integrate orientation, update orientation
+         //integrate velocity
+         COM = (comVelocity * timeStep) + COM;
+         //integrate orientation
+         orientation = (angVelocity * timeStep) + orientation;
+         //update currV
          currV = QRot(origV, orientation)+ COM
     }
 
@@ -158,7 +161,7 @@ public:
 
         if (isFixed)
             return;
-        
+
         /***************
          TODO
          ***************/
