@@ -114,7 +114,9 @@ public:
          TODO
          ***************/
          //Complete
-         R = QRot(invIT, orientation);
+         for(int i = 0; i < invIt.rows()-1; i++){
+            R.row(i) = QRot(invIT.row(i), orientation);
+         }
         return R;
     }
 
@@ -127,9 +129,13 @@ public:
          //integrate velocity
          COM = (comVelocity * timeStep) + COM;
          //integrate orientation
-         orientation = (angVelocity * timeStep) + orientation;
+         RowVector4d w = quaternion(0, angVelocity.x(), angVelocity.y(), angVelocity.z());
+         //update orientation
+         orientation = orientation + (timeStep/2)*(w*orientation);
          //update currV
-         currV = QRot(origV, orientation)+ COM
+         for(int i = 0; i < origV.rows()-1; i++){
+           currV.row(i) = QRot(origV.row(i), orientation) + COM;
+         }
     }
 
 
@@ -146,9 +152,17 @@ public:
 
         //update linear and angular velocity according to all impulses
         for (int i=0;i<impulses.size();i++){
+        RowVector3d pos = get<0>(impulses);
+        RowVector3d dir = get<1>(impulses);
+        //RowVector3d angImp = invIT*dir.cross(pos);
             /***************
              TODO
              ***************/
+        for(int j=0; j<3; j++){
+        comVelocity[j] += dir[j]/mass;
+
+        //angVelocity[j] += angImp[j];
+        }
 
         }
         impulses.clear();
@@ -237,6 +251,22 @@ public:
         /***************
          TODO
          ***************/
+         RowVector3d depthVector = depth*contactNormal;
+         contactPosition = penPosition + depthVector;
+         if(ro1.isFixed){
+           ro2.COM -= depthVector;
+           ro2.currV -= depthVector;
+         }
+         else if(ro2.isFixed){
+           ro1.COM += depthVector;
+           ro2.currV += depthVector;
+         }
+         else{
+           while(penPosition < contactPosition){
+             ro1.COM -=depthVector/ro1.mass;
+             ro2.COM += depthVector/ro2.mass;
+           }
+         }
 
 
         //Create impulses and push them into ro1.impulses and ro2.impulses.
@@ -244,6 +274,13 @@ public:
         /***************
          TODO
          ***************/
+         double impulseMag = -(1+CRCoeff)*
+         ((ro1.comVelocity - ro2.comVelocity).dot(contactNormal)/(1/ro1.mass + 1/ro2.mass));
+         Impulse ro1Impulse = new Impulse(contactPosition, impulseMag*contactNormal);
+         Impulse ro2Impulse = new Impulse(contactPosition, -impulseMag*contactNormal);
+         ro1.impulses.push_back(ro1Impulse);
+         ro2.impulses.push_back(ro2Impulse);
+
 
         //updating velocities according to impulses
         ro1.updateImpulseVelocities();
