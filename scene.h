@@ -118,9 +118,8 @@ public:
          TODO
          ***************/
          //Complete
-         getCOMandInvIT(currV, T, density, mass, naturalCOM, R);
-         for(int i = 0; i < R.rows()-1; i++){
-            R.row(i) = QRot(R.row(i), orientation);
+         for(int i = 0; i < invIT.rows()-1; i++){
+            R.row(i) = QRot(invIT.row(i), orientation);
          }
         return R;
     }
@@ -135,7 +134,9 @@ public:
          //integrate velocity
          COM = (comVelocity * timeStep) + COM;
          //integrate orientation
-         RowVector4d orientationStep = QExp(0,(angVelocity*timeStep));
+         RowVector4d w;
+         w <<0, (angVelocity.x() * timeStep), (angVelocity.y()*timeStep), (angVelocity.z()*timeStep);
+         RowVector4d orientationStep = QExp(w);
          //update orientation
          orientation = QMult(orientation, orientationStep);
          //update currV
@@ -159,14 +160,14 @@ public:
         for (int i=0;i<impulses.size();i++){
         RowVector3d pos = get<0>(impulses);
         RowVector3d dir = get<1>(impulses);
-        //RowVector3d angImp = invIT*dir.cross(pos);
+        RowVector3d angImp = invIT*dir.cross(pos);
             /***************
              TODO
              ***************/
         for(int j=0; j<3; j++){
         comVelocity[j] += dir[j]/mass;
 
-        //angVelocity[j] += angImp[j];
+        angVelocity[j] += angImp[j];
         }
 
         }
@@ -187,8 +188,6 @@ public:
          comVelocity = comVelocity + (gravity*timeStep);
          drag = airDrag * comVelocity;
          comVelocity = comVelocity - drag;
-
-         
     }
 
 
@@ -215,7 +214,6 @@ public:
         getCOMandInvIT(origV, T, density, mass, naturalCOM, invIT);
 
         gravity << 0, -9.8, 0;
-        weight = gravity * mass;
 
         origV.rowwise()-=naturalCOM;  //removing the natural COM of the OFF file (natural COM is never used again)
 
@@ -307,8 +305,8 @@ public:
         ro1.frictionTan = frictionTan;
         ro2.frictionTan = frictionTan;
 
-        Impulse ro1Impulse = new Impulse(ro1R, -impulseMag*contactNormal);
-        Impulse ro2Impulse = new Impulse(ro2R, impulseMag*contactNormal);
+        Impulse * ro1Impulse = new Impulse(ro1R, -impulseMag*contactNormal);
+        Impulse * ro2Impulse = new Impulse(ro2R, impulseMag*contactNormal);
         ro1.impulses.push_back(ro1Impulse);
         ro2.impulses.push_back(ro2Impulse);
 
@@ -325,7 +323,7 @@ public:
      2. detecting and handling collisions with the coefficient of restitutation CRCoeff
      3. updating the visual scene in fullV and fullT
      *********************************************************************/
-    void updateScene(double timeStep, double CRCoeff, MatrixXd& fullV, MatrixXi& fullT){
+    void updateScene(double timeStep, double CRCoeff, MatrixXd& fullV, MatrixXi& fullT, double airDrag, double friction){
         fullV.conservativeResize(numFullV,3);
         fullT.conservativeResize(numFullT,3);
         int currVIndex=0, currFIndex=0;
