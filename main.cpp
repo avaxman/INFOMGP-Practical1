@@ -10,6 +10,8 @@ double currTime = 0;
 //initial values
 double timeStep = 0.02;
 double CRCoeff= 1.0;
+double airDrag = 0.1;
+double friction = 0.2;
 
 Scene scene;
 
@@ -54,7 +56,7 @@ bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int modifier)
     if (key == 'S')
     {
         if (!viewer.core.is_animating){
-            scene.updateScene(timeStep, CRCoeff, V,F);
+            scene.updateScene(timeStep, CRCoeff, V,F, airDrag, friction);
             currTime+=timeStep;
             std::cout <<"currTime: "<<currTime<<std::endl;
             return true;
@@ -70,7 +72,7 @@ bool pre_draw(igl::viewer::Viewer &viewer)
     using namespace std;
     
     if (viewer.core.is_animating){
-        scene.updateScene(timeStep, CRCoeff, V,F);
+        scene.updateScene(timeStep, CRCoeff, V,F, airDrag, friction);
         currTime+=timeStep;
         //cout <<"currTime: "<<currTime<<endl;
     }
@@ -105,7 +107,7 @@ int main(int argc, char *argv[])
     createPlatform(platV, platF, platCOM, platOrientation);
     
     scene.addRigidObject(platV, platF, 10000.0, true, platCOM, platOrientation);
-    scene.updateScene(0.0, CRCoeff, V,F);
+    scene.updateScene(0.0, CRCoeff, V,F, airDrag, friction);
     
     // Viewer Settings
     igl::viewer::Viewer viewer;
@@ -123,6 +125,8 @@ int main(int argc, char *argv[])
         //algorithmic options
         viewer.ngui->addGroup("Simulation");
         viewer.ngui->addVariable("CR Coeff",CRCoeff);
+        viewer.ngui->addVariable("Air Drag Coeff",airDrag);
+        viewer.ngui->addVariable("Friction Coeff",friction);
         viewer.ngui->addVariable<double>("Time Step",[&](double val) {
             viewer.core.animation_max_fps = (((int)1.0/val));
             timeStep=val;
