@@ -38,10 +38,11 @@ public:
     //kinematics
     bool isFixed;  //is the object immobile
     double mass;
-    double airDrag;
+    double currDensity;
     RowVector3d comVelocity;  //the linear velocity of the center of mass
     RowVector3d angVelocity;  //the angular velocity of the object.
     RowVector3d frictionTan; // the tangent used for friction calculations
+    RowVector3d totalVelocity;
     RowVector3d gravity;
     RowVector3d drag; //drag force
 
@@ -118,8 +119,9 @@ public:
          TODO
          ***************/
          //Complete
-         for(int i = 0; i < invIT.rows()-1; i++){
-            R.row(i) = QRot(invIT.row(i), orientation);
+         getCOMandInvIT(currV, T, currDensity, mass, COM, R);
+         for(int i = 0; i < R.rows()-1; i++){
+            R.row(i) = QRot(R.row(i), orientation);
          }
         return R;
     }
@@ -132,6 +134,7 @@ public:
          ***************/
          //Complete
          //integrate velocity
+         //COM = (comVelocity * timeStep) + COM;
          COM = (comVelocity * timeStep) + COM;
          //integrate orientation
          RowVector4d w;
@@ -140,44 +143,48 @@ public:
          //update orientation
          orientation = QMult(orientation, orientationStep);
          //update currV
-         for(int i = 0; i < origV.rows()-1; i++){
+         for(int i = 0; i < origV.rows(); i++){
            currV.row(i) = QRot(origV.row(i), orientation) + COM;
          }
+         invIT = getCurrInvInertiaTensor();
     }
 
     //Updating velocity *instantaneously*. i.e., not integration from acceleration, but as a result of a collision impulse from the "impulses" list
     //You need to modify this for that purpose.
     void updateImpulseVelocities(){
 
-        if (isFixed){
-            comVelocity.setZero();
-            impulses.clear();
-            angVelocity.setZero();
-            return;
-        }
+              if (isFixed){
+                  comVelocity.setZero();
+                  impulses.clear();
+                  angVelocity.setZero();
+                  return;
+              }
 
-        //update linear and angular velocity according to all impulses
-        for (int i=0;i<impulses.size();i++){
-        RowVector3d pos = get<0>(impulses);
-        RowVector3d dir = get<1>(impulses);
-        RowVector3d angImp = invIT*dir.cross(pos);
-            /***************
-             TODO
-             ***************/
-        for(int j=0; j<3; j++){
-        comVelocity[j] += dir[j]/mass;
+              //update linear and angular velocity according to all impulses
+              for (int i=0;i<impulses.size();i++){
+              RowVector3d pos = std::get<0>(impulses[i]);
+              RowVector3d dir = std::get<1>(impulses[i]);
+              double dirMag = dir.norm();
+              RowVector3d angImp = invIT*pos.cross(dir + frictionTan*dirMag).transpose();
+              RowVector3d linImp = (dir + frictionTan*dirMag)/(mass/1000);
 
-        angVelocity[j] += angImp[j];
-        }
+                  /***************
+                   TODO
+                   ***************/
+              for(int j=0; j<3; j++){
+              comVelocity[j] += linImp[j];
 
-        }
-        impulses.clear();
+            //  angVelocity[j] += angImp[j];
+              }
+
+              }
+              impulses.clear();
     }
 
 
     //Updating the linear and angular velocities of the object
     //You need to modify this to integrate from acceleration in the field (basically gravity)
-    void updateVelocity(double timeStep){
+    void updateVelocity(double timeStep, double airDrag){
 
         if (isFixed)
             return;
@@ -185,16 +192,16 @@ public:
         /***************
          TODO
          ***************/
+
          comVelocity = comVelocity + (gravity*timeStep);
-         drag = airDrag * comVelocity;
-         comVelocity = comVelocity - drag;
+         comVelocity = comVelocity - (airDrag*comVelocity);
     }
 
 
     //the full integration for the time step (velocity + position)
     //You need to modify this if you are changing the integration
-    void integrate(double timeStep){
-        updateVelocity(timeStep);
+    void integrate(double timeStep, double airDrag){
+        updateVelocity(timeStep, airDrag);
         updatePosition(timeStep);
     }
 
@@ -204,6 +211,7 @@ public:
         T=_T;
         isFixed=_isFixed;
         COM=_COM;
+        currDensity = density;
         orientation=_orientation;
 		    comVelocity.setZero();
         angVelocity.setZero();
@@ -213,7 +221,7 @@ public:
         //initializes the original geometry (COM + IT) of the object
         getCOMandInvIT(origV, T, density, mass, naturalCOM, invIT);
 
-        gravity << 0, -9.8, 0;
+        gravity << 0, -9.81, 0;
 
         origV.rowwise()-=naturalCOM;  //removing the natural COM of the OFF file (natural COM is never used again)
 
@@ -256,63 +264,51 @@ public:
             CRCoeff: the coefficient of restitution
      *********************************************************************/
     void handleCollision(RigidObject& ro1, RigidObject& ro2, const double depth, const RowVector3d& contactNormal, const RowVector3d& penPosition, const double CRCoeff, double friction){
+      //Interpretation resolution: move each object by inverse mass weighting, unless either is fixed, and then move the other. Remember to respect the direction of contactNormal and update penPosition accordingly.
+      RowVector3d contactPosition;
+      /***************
+       TODO
+       ***************/
+       RowVector3d depthVector = depth*contactNormal;
+   contactPosition = penPosition + depthVector;
+   if(ro1.isFixed){
+       ro2.COM -= depthVector;
+   }
+   else if(ro2.isFixed){
+       ro1.COM += depthVector;
+   }
+   else{
+           ro1.COM -= contactNormal*depth*0.5;
 
-        //Interpretation resolution: move each object by inverse mass weighting, unless either is fixed, and then move the other. Remember to respect the direction of contactNormal and update penPosition accordingly.
-        RowVector3d contactPosition;
-        /***************
-         TODO
-         ***************/
-         RowVector3d depthVector = depth*contactNormal;
-        contactPosition = penPosition + depthVector;
-        if(ro1.isFixed){
-            ro2.COM += depthVector;
-            ro2.currV += depthVector;
-        }
-        else if(ro2.isFixed){
-            ro1.COM -= depthVector;
-            ro1.currV -= depthVector;
-        }
-        else{
-            double tempDepth = depth;
-            while(tempDepth > 0){
-                ro1.COM -= contactNormal*tempDepth*0.01/ro1.mass;
-                tempDepth -= tempDepth*0.01/ro1.mass;
+           ro2.COM += contactNormal*depth*0.5;
+   }
+   //Create impulses and push them into ro1.impulses and ro2.impulses.
+   /***************
+    TODO
+    ***************/
+   RowVector3d ro1R = contactPosition - ro1.COM;
+   RowVector3d ro2R = contactPosition - ro2.COM;
+   //RowVector3d ro1RCrossNorm = ro1R.cross(contactNormal);
+   //RowVector3d ro2RCrossNorm = ro2R.cross(contactNormal);
+   double impulseMag = -(1+CRCoeff)*
+                       ((ro1.comVelocity - ro2.comVelocity).dot(contactNormal)
+                       /((1/(ro1.mass/1000) + 1/(ro2.mass/1000))));
+                    //   +(ro1R.cross(contactNormal)*ro1.invIT*ro1R.cross(contactNormal).transpose())+(ro2R.cross(contactNormal)*ro2.invIT*ro2R.cross(contactNormal).transpose())));
 
-                if(!(tempDepth > 0))
-                    break;
+   RowVector3d frictionTan = (contactNormal.cross(ro1.comVelocity - ro2.comVelocity)).cross(contactNormal)*friction;
+   ro1.frictionTan = frictionTan;
+   ro2.frictionTan = frictionTan;
 
-                ro2.COM += contactNormal*tempDepth*0.01/ro2.mass;
-                tempDepth -= tempDepth*0.01/ro2.mass;
-            }
-        }
+   Impulse* ro1Impulse = new Impulse(ro1R, -impulseMag*contactNormal);
+   Impulse* ro2Impulse = new Impulse(ro2R, impulseMag*contactNormal);
+   ro1.impulses.push_back(*ro1Impulse);
+   ro2.impulses.push_back(*ro2Impulse);
+   delete ro1Impulse;
+   delete ro2Impulse;
 
-
-        //Create impulses and push them into ro1.impulses and ro2.impulses.
-
-        /***************
-         TODO
-         ***************/
-        RowVector3d ro1R = contactPosition - ro1.COM;
-        RowVector3d ro2R = contactPosition - ro2.COM;
-        RowVector3d ro1RCrossNorm = ro1R.cross(contactNormal);
-        RowVector3d ro2RCrossNorm = ro2R.cross(contactNormal);
-        double impulseMag = -(1+CRCoeff)*
-                            ((ro1.comVelocity - ro2.comVelocity).dot(contactNormal)
-                            /((1/ro1.mass + 1/ro2.mass)
-                            +(ro1RCrossNorm.transpose()*ro1.invIT*ro1RCrossNorm)+(ro2RCrossNorm.transpose()*ro2.invIT*ro2RCrossNorm)));
-
-        RowVector3d frictionTan = (contactNormal.cross(ro1.comVelocity - ro2.comVelocity)).cross(contactNormal)*friction;
-        ro1.frictionTan = frictionTan;
-        ro2.frictionTan = frictionTan;
-
-        Impulse * ro1Impulse = new Impulse(ro1R, -impulseMag*contactNormal);
-        Impulse * ro2Impulse = new Impulse(ro2R, impulseMag*contactNormal);
-        ro1.impulses.push_back(ro1Impulse);
-        ro2.impulses.push_back(ro2Impulse);
-
-        //updating velocities according to impulses
-        ro1.updateImpulseVelocities();
-        ro2.updateImpulseVelocities();
+   //updating velocities according to impulses
+   ro1.updateImpulseVelocities();
+   ro2.updateImpulseVelocities();
     }
 
 
@@ -330,7 +326,7 @@ public:
 
         //integrating velocity, position and orientation from forces and previous states
         for (int i=0;i<rigidObjects.size();i++)
-            rigidObjects[i].integrate(timeStep);
+            rigidObjects[i].integrate(timeStep, airDrag);
 
         //detecting and handling collisions when found
         //This is done exhaustively: checking every two objects in the scene.
