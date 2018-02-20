@@ -1,10 +1,10 @@
 # Practical 1: Rigid-Body Simulation
 
-##Handout date: 23/Feb/2017.
+##Handout date: 20/Feb/2018.
 
-##Deadline: 14/Mar/2017 09:00AM.
+##Deadline: 13/Mar/2018 9:00.
 
-The first exercise will be about simulating a the motion of rigid bodies, and their interactions through collision. The objectives of the practical are:
+The first practical is about simulating a the motion of rigid bodies, and their interactions through collision. The objectives of the practical are:
 
 1. Implement rigid velocity, position, and orientation integration in a discrete-time iteration.
  <br />
@@ -19,18 +19,18 @@ This is the repository for the skeleton on which you will build your first exerc
 
 ##Scope
 
-The basic scenario is limited in scope to convex objects, and includes no air resistance or friction. The environment loads scenes that describe a set of objects, and their positions in space, and the world contains a big, immobile, and heavy plate on which the objects fall. There are no ambient forces in the basic setting other than gravity.
+The basic scenario is limited in scope to convex objects, and includes no air resistance or friction. The environment loads scenes that describe a set of objects, and their positions in space. The world contains a big, immobile, and heavy plate on which the objects fall. There are no ambient forces in the basic setting other than gravity.
 
 The environment is already configured to run in a time loop, where it integrates movement and detects collisions in each step. Collisions are limited to a single point per object, and in case of more, one point is chosen (this might lead to mildly non-physical behavior).
 
 The practical includes the following basic mandatory requirements:
 
 
-1. For every time step, integrate the accelerations (linear and angular) into velocities, and the velocities into positions and orientations. Use an *Euler forward scheme*, as learned in class **(Lecture 5). This requires changing both the position of the COM by the linear velocity, and the orientation by the angular velocity (Lecture 3). the time step difference $\Delta t$ is given by the GUI, and controllable by the menu.
+1. For every time step, integrate the accelerations (linear and angular) into velocities, and the velocities into positions and orientations. Use an *Euler forward scheme*, as learned in class **(Lecture 5)**. This requires changing both the position of the COM by the linear velocity, and the orientation by the angular velocity **(Lecture 3)**. the time step difference $\Delta t$ is given by the GUI, and controllable by the menu.
 <br />
-2. For every time step, resolve interpenetration (Lecture 4) *linearly*. The means, given the penetration point, depth, and normal, move the objects apart linearly so they are only tangent. You may assume there is a single point of contact, and not required to solve multiple interpenetrations in the iterative manner.
+2. For every time step, resolve interpenetration **(Lecture 4)** *linearly*. That means that, given the penetration point, depth, and normal, move the objects apart linearly so they are only tangent. You may assume there is a single point of contact, and not required to solve multiple interpenetrations in the iterative manner.
 <br />
-3. For every time step, resolve the collision by assigning opposite impulses to two colliding objects, and correcting their velocities instantenously (Lecture 4). This will change both the linear and the angular velocities. The environment computes the inverse inertia tensor for you in the original orientation of the object (as appears in the file), and around its COM.
+3. For every time step, resolve the collision by assigning opposite impulses to two colliding objects, and correcting their velocities instantenously **(Lecture 4)**. This will change both the linear and the angular velocities. The environment computes the inverse inertia tensor for you in the original orientation of the object (as appears in the file), and around its COM.
 
 
 See below for details on where to do all that in the code.
@@ -39,7 +39,7 @@ See below for details on where to do all that in the code.
 
 The above will earn you $70\%$ of the grade. To get a full $100$, you must choose 2 of these 6 extension options, and augment the practical. Some will require minor adaptations to the GUI or the function structure which are easy to do. Each extension will earn you $15\%$, and the exact grading will commensurate with the difficulty. Note that this means that all extensions are equal in grade; if you take on a hard extension, it's your own challenge to complete well.
 
-1. Add low-velocity drag forces in the air (Lecture 1). You should use the *total velocity* (the entire velocity of a point from linear and angular velocity), and a drag coefficient which is controllable by the user. **Level: easy**.
+1. Add low-velocity drag forces in the air **(Lecture 1)**. You should use the *total velocity* (the entire velocity of a point from linear and angular velocity), and a drag coefficient which is controllable by the user. **Level: easy**.
  <br />
 2. Add friction to the collision impulses (Lecture 4), again with a user-controllable coefficient. **Level: easy**.
  <br />
@@ -54,10 +54,14 @@ Possible further extension: allow to "push" an object with an artificial force/i
 
 You may invent your own extension as substitute to **one** in the list above, but it needs approval on the Lecturer's behalf **beforehand**.
 
+##Demo
+
+The project contains a demo compiled for Osx and Windows, in the ``Demos`` folder. It is meant to be used as a loose reference to the physical behaviour; it may very well be that your solutions behaves a bit differently and it's OK. However big variance in behaviour should be suspicious.
+
 
 ##Installation
 
-The skeleton uses the following dependencies: [libigl](http://libigl.github.io/libigl/), and consequently [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), for the representation and viewing of geometry, and [libccd](https://github.com/danfis/libccd) for collision detection. libigl viewer is using [nanogui](https://github.com/wjakob/nanogui) for the menu. Everything is bundled as either submodules, or just incorporated code within the environment, and you do not have to take care of any installation details. To get the library, use:
+The skeleton uses the following dependencies: [libigl](http://libigl.github.io/libigl/), and consequently [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), for the representation and viewing of geometry, and [libccd](https://github.com/danfis/libccd) for collision detection. libigl viewer is using [imGUI](https://github.com/ocornut/imgui) for the menu. Everything is bundled as either submodules, or just incorporated code within the environment, and you do not have to take care of any installation details. To get the library, use:
 
 ```bash
 git clone --recursive https://github.com/avaxman/INFOMGP-Practical1.git
@@ -76,7 +80,7 @@ In windows, you need to use [cmake-gui](https://cmake.org/runningcmake/). Pressi
 
 ##Using the dependencies
 
-You do not need to utilize any dependency on your own, or install anything other than the above. For the most part, the dependencies are parts of code that are background, or collision detection code, which is not a direct part of the practical. The exception is [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) for the representation and manipulation of vectors and matrices, but it is a quite a shallow learning curve. It is even possible to learn most necessary aspects from looking at the existing code. However, it is advised to go through the "getting started" section on the Eigen website (reading up to and including "Dense matrix and array manipulation" should be enough).
+You do not need to utilize any dependency on your own, or install anything other than the above. For the most part, the dependencies are parts of code that are background, or collision detection code, which is not a direct part of the practical. The exception is [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) for the representation and manipulation of vectors and matrices, but it is a quite a shallow learning curve. It is even possible to learn most necessary aspects from looking at the existing code. However, it is advised to go through the "getting started" section on the Eigen website (reading up to and including "Dense matrix and array manipulation" should be enough). Adding options in [imGUI](https://github.com/ocornut/imgui) is also required for some extensions; for that, their page gives many examples, and tutorial 106_ViewerMenu in [libigl](http://libigl.github.io/libigl/) also provides one specific o the GUI of this exercise.
 
 ##Working with the repository
 
@@ -130,7 +134,7 @@ For the most part, the description of the function will tell you what exactly yo
 
 ###Input
 
-The program is loaded by giving a TXT file that describes the scene as an argument to the executable. The file should be in the `data` subfolder, which is automatically discovered by the CMake. The format of the file is:
+The program is loaded by providing two commandline arguments: path of data folder (without final "/"), and name of TXT file that describes the scene. The file should be in the `data` subfolder, which is automatically discovered by the CMake. The format of the file is:
 
 ```
 #num_objects
@@ -153,11 +157,11 @@ Where:
 
 ###User interface
 
-![screenshot of viewer](viewer-shot-practical1.png "screenshot of viewer")
+![screenshot of viewer](practical1_interface.png "screenshot of viewer")
 
-The viewer presents the loaded scene, and you may interact with the viewing with the mouse: rotate with the left button pressed and moving around (the "[" and "]" buttons change the behaviour of the trackball), zoom with the mousewheel, and translate with the right button pressed and dragging. Some other options are printed to the output when the program starts.
+The viewer presents the loaded scene, and you may interact with the viewing with the mouse: rotate with the left button pressed and moving around, zoom with the mousewheel, and translate with the right button pressed and dragging. Some other options are printed to the output when the program starts.
 
-The menu also controls the visual features, and the setting of the coefficient of restitution and the time step. They can be updated at any point in the simulation. You might add more parameters with some extensions. Everything is set up in `main()`.
+The menu also controls the visual features of the viewer, and the setting of the coefficient of restitution and the time step. They can be updated at any point in the simulation. You might add more parameters with some extensions. Everything is set up through `main()` and the custom imGUI menu in the `main.cpp` file. Note that the libigl "Workspace" and "load mesh" are not relevant to the default setup (you can make use of them if you want for the extensions!)
 
 The simluation can be run in two modes: continuously, toggled with the `space` key (to stop/run), and step by step, with the `S` key. This behavior is already encoded. The visual update of the scene from the objects is also already encoded in `updateScene()`
 
@@ -180,30 +184,30 @@ You do not have to compute the entire algorithmic environment from scratch. The 
 
 1. Collision detection, as explained above.
 <br />
-2. A function `getCOMandInvIT` that computes the original COM and the inverse inertia tensor from the original OFF file, and is called by the `RigidObject` constructor. you do not need the COM it computes; the constructor translates the object (`origV` coordinates) to the origin, so it always has $COM=\left(0,0,0\right)$. The constructor also create `currV` as a translation and rotation of `origV` to fit the prescribed values from the scene file. 
+2. A function `getCOMandInvIT` that computes the original COM and the inverse inertia tensor from the original OFF file, and is called by the `RigidObject` constructor. you do not need the COM it computes; the constructor translates the object (`origV` coordinates) to the origin, so it always has $COM=\left(0,0,0\right)$. The constructor also creates `currV` as a translation and rotation of `origV` to fit the prescribed values from the scene file. 
 
 The inverse inertia tensor you get from `getCOMandInvIT` is **not after applying the orientation, not even that in the scene file**. That is, what you get is the inverse inertia tensor of ``origV`` around the origin. You will have to compute the inverse inertia tensor for a given `currV`, according to the its current orientation, and it is always then around the COM of the moving object. See Lecture 3 for how to do that efficiently, and be careful to apply the correct rotation!
 
 ##Submission
 
-The entire code of the practical has to be submitted in a zip file to the designated submission server that will be anounced. The deadline is **14/Mar/2017 09:00AM**. 
+The changed files (often just ``scene.h``) have to be submitted in a zip file by E-mail to the lecturer. The deadline is **13/Mar/2017 09:00AM**. Students who have not submitted the practical by that time **will not be checked** in the session.
 
 The practical must be done **in pairs**. Doing it alone requires a-priori permission. Any other combination (more than 2 people, or some fractional number) is not allowed. 
 
-The practical will be checked during the lecture time of the deadline date. Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. We might need more than the allocated two hours for the lecture time; you will very soon receive a notification. The registration for time slots will appear soon.
+The practical will be checked during a special session in the deadline date (instead of a lecture that day). Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. This will typically be a double session in our regular slot B; check the calendar. The registration for time slots is in our [public sheet](https://docs.google.com/spreadsheets/d/1Zeo2mPu_wv9xjMrAFdzhcTyMGLOpsJqtaf_4Y4oSp2I/edit#gid=1738095803) in the ``Time Slots - Practical 1`` tab.
 
 ##Frequently Asked Questions
 
-Here are detailed answers to common questions. Please read through whenever ou have a problem, since in most cases someone else would have had it as well.
+Here are detailed answers to common questions. Please read through whenever you have a problem, since in most cases someone else would have had it as well.
 
 <span style="color:blue">Q:</span> I am getting "alignment" errors when compiling in Windows.
 <span style="color:blue">A:</span> Delete everything, and re-install using 64-bit configuration in `cmake-gui` from a fresh copy. If you find it doesn't work from the box, contact the Lecturer. Do not install other non-related things, or try to alter the cmake. 
 
-<span style="color:blue">Q:</span> I have an angular velocity $\vec{\omega}$, how do I integrate it?
+<span style="color:blue">Q:</span> I have an angular velocity $\overline{\omega}$, how do I integrate it?
 <span style="color:blue">A:</span> There are actually two ways to do that that could be considere "forward Euler". The following is the simplest (radial integration), and working in the demo:
 
-1. Get the accumulated rotation: $\Delta t \cdot \vec{\omega}$. (compare to linear $\Delta t \cdot \vec{v}$ to accumulate position)
-2. This is an angle-axis representation of the accumulated rotation. You need a quaternion $\Delta q$ that represents this rotation. The simplest way is to use the *exponent* function `QExp` given to you in the code. However, you need to feed it with the imaginary quaternion $\Delta q = QExp(\left(0,\Delta t \cdot \vec{\omega}\right))$.
+1. Get the accumulated rotation: $\Delta t \cdot \overline{\omega}$. (compare to linear $\Delta t \cdot \overline{v}$ to accumulate position)
+2. This is an angle-axis representation of the accumulated rotation. You need a quaternion $\Delta q$ that represents this rotation. The simplest way is to use the *exponent* function `QExp` given to you in the code. However, you need to feed it with the imaginary quaternion $\Delta q = QExp(\left(0,\Delta t \cdot \overline{\omega}\right))$.
 3. Apply $\Delta q$ from the left to $q_t$ (the current orientation) to get $q_{t+\Delta t}$ (the new orientation): $q_{t+\Delta t} = \Delta q \cdot q_t$. remember that you have `QMult` for quaternion multiplication.
 
 
