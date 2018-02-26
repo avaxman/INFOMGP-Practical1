@@ -204,11 +204,7 @@ Here are detailed answers to common questions. Please read through whenever you 
 <span style="color:blue">A:</span> Delete everything, and re-install using 64-bit configuration in `cmake-gui` from a fresh copy. If you find it doesn't work from the box, contact the Lecturer. Do not install other non-related things, or try to alter the cmake. 
 
 <span style="color:blue">Q:</span> I have an angular velocity $\overline{\omega}$, how do I integrate it?
-<span style="color:blue">A:</span> There are actually two ways to do that that could be considere "forward Euler". The following is the simplest (radial integration), and working in the demo:
-
-1. Get the accumulated rotation: $\Delta t \cdot \overline{\omega}$. (compare to linear $\Delta t \cdot \overline{v}$ to accumulate position)
-2. This is an angle-axis representation of the accumulated rotation. You need a quaternion $\Delta q$ that represents this rotation. The simplest way is to use the *exponent* function `QExp` given to you in the code. However, you need to feed it with the imaginary quaternion $\Delta q = QExp(\left(0,\Delta t \cdot \overline{\omega}\right))$.
-3. Apply $\Delta q$ from the left to $q_t$ (the current orientation) to get $q_{t+\Delta t}$ (the new orientation): $q_{t+\Delta t} = \Delta q \cdot q_t$. remember that you have `QMult` for quaternion multiplication.
+<span style="color:blue">A:</span> <span style="color:red">Changed answer</span>: this is fully explained in class (Lecture 5).
 
 
 #Good work!
