@@ -206,6 +206,9 @@ Here are detailed answers to common questions. Please read through whenever you 
 <span style="color:blue">Q:</span> I have an angular velocity $\overline{\omega}$, how do I integrate it?
 <span style="color:blue">A:</span> <span style="color:red">Changed answer</span>: this is fully explained in class (Lecture 5).
 
+<span style="color:blue">Q:</span> Why is the demo not working out of the box?
+<span style="color:blue">A:</span>: with the same parameters as your input program: infomgp_practical1 "folder_name_without_slash" "name of txt scene files".
+
 
 #Good work!
 
