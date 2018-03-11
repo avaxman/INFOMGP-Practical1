@@ -10,9 +10,9 @@ The first practical is about simulating a the motion of rigid bodies, and their 
  <br />
 2. Implement interpenetration resolution.
  <br />
-2. Implement impulse-based collision resolution.
+3. Implement impulse-based collision resolution.
  <br />
-3. Extend the framework with some chosen effects.  
+4. Extend the framework with some chosen effects.  
 
 This is the repository for the skeleton on which you will build your first exercise. Using CMake allows you to work and submit your code in all platforms. The entire environment is in C++, but most of the "nastier" coding parts have been simplified; for the most part, you only code the mathemtical-physical parts.
 
