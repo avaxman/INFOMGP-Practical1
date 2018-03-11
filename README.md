@@ -209,6 +209,9 @@ Here are detailed answers to common questions. Please read through whenever you 
 <span style="color:blue">Q:</span> Why is the demo not working out of the box?
 <span style="color:blue">A:</span>: with the same parameters as your input program: infomgp_practical1 "folder_name_without_slash" "name of txt scene files".
 
+<span style="color:blue">Q:</span> How do I do inverse mass weighting for linear interpenetration?
+<span style="color:blue">A:</span>: Given two objects with masses $m_1,m_2$ interpenetrating in mutual distance $d$, their individual corrections need to be $d_1=\frac{d \cdot m_1}{m_1+m_2}$ and respectively for $d_2$. Note that: 1) the lighter object needs to move more (that's why it's inverse) 2) if one object is fixed, it's like it has infinite mass, and the other object moves all the way back.
+
 
 #Good work!
 
