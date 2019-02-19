@@ -15,17 +15,22 @@ float currTime = 0;
 //initial values
 float timeStep = 0.02;
 float CRCoeff= 1.0;
-double airDrag = 0;
-double frictionCoeff = 0;
 
 Scene scene;
 
-void createPlatform(Eigen::MatrixXd& platV, Eigen::MatrixXi& platF, Eigen::RowVector3d& platCOM, Eigen::RowVector4d& platOrientation)
+Eigen::MatrixXd platV;
+Eigen::MatrixXi platF;
+Eigen::MatrixXi platT;
+Eigen::RowVector3d platCOM;
+Eigen::RowVector4d platOrientation;
+
+void createPlatform()
 {
   double platWidth=100.0;
   platCOM<<0.0,-5.0,-0.0;
-  platV.resize(8,3);
+  platV.resize(9,3);
   platF.resize(12,3);
+  platT.resize(12,4);
   platV<<-platWidth,0.0,-platWidth,
   -platWidth,0.0,platWidth,
   platWidth,0.0,platWidth,
@@ -33,7 +38,8 @@ void createPlatform(Eigen::MatrixXd& platV, Eigen::MatrixXi& platF, Eigen::RowVe
   -platWidth,-platWidth/10.0,-platWidth,
   -platWidth,-platWidth/10.0,platWidth,
   platWidth,-platWidth/10.0,platWidth,
-  platWidth,-platWidth/10.0, -platWidth;
+  platWidth,-platWidth/10.0, -platWidth,
+  0.0,-platWidth/20.0, 0.0;
   platF<<0,1,2,
   2,3,0,
   6,5,4,
@@ -48,6 +54,28 @@ void createPlatform(Eigen::MatrixXd& platV, Eigen::MatrixXi& platF, Eigen::RowVe
   3,7,4;
   
   platOrientation<<1.0,0.0,0.0,0.0;
+  
+  platT<<platF, VectorXi::Constant(12,8);
+  
+  
+}
+
+void updateMeshes(igl::opengl::glfw::Viewer &viewer)
+{
+  RowVector3d platColor; platColor<<0.8,0.8,0.8;
+  RowVector3d meshColor; meshColor<<0.8,0.2,0.2;
+  viewer.core.align_camera_center(scene.meshes[0].currV);
+  for (int i=0;i<scene.meshes.size();i++){
+    viewer.data_list[i].clear();
+    viewer.data_list[i].set_mesh(scene.meshes[i].currV, scene.meshes[i].F);
+    viewer.data_list[i].set_face_based(true);
+    viewer.data_list[i].set_colors(meshColor);
+    viewer.data_list[i].show_lines=false;
+  }
+  viewer.data_list[0].show_lines=false;
+  viewer.data_list[0].set_colors(platColor.replicate(scene.meshes[0].F.rows(),1));
+  viewer.data_list[0].set_face_based(true);
+  //viewer.core.align_camera_center(scene.meshes[0].currV);
 }
 
 bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier)
@@ -55,14 +83,19 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier
   if (key == ' ')
   {
     viewer.core.is_animating = !viewer.core.is_animating;
+    if (viewer.core.is_animating)
+      cout<<"Simulation running"<<endl;
+    else
+      cout<<"Simulation paused"<<endl;
     return true;
   }
   
   if (key == 'S')
   {
     if (!viewer.core.is_animating){
-      scene.updateScene(timeStep, CRCoeff, V,F, airDrag, frictionCoeff);
+      scene.updateScene(timeStep, CRCoeff);
       currTime+=timeStep;
+      updateMeshes(viewer);
       std::cout <<"currTime: "<<currTime<<std::endl;
       return true;
     }
@@ -71,18 +104,20 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier
 }
 
 
+
+
 bool pre_draw(igl::opengl::glfw::Viewer &viewer)
 {
   using namespace Eigen;
   using namespace std;
   
   if (viewer.core.is_animating){
-    scene.updateScene(timeStep, CRCoeff, V,F, airDrag, frictionCoeff);
+    scene.updateScene(timeStep, CRCoeff);
     currTime+=timeStep;
     //cout <<"currTime: "<<currTime<<endl;
+    updateMeshes(viewer);
   }
-  viewer.data().clear();
-  viewer.data().set_mesh(V,F);
+ 
   
   return false;
 }
@@ -122,39 +157,35 @@ int main(int argc, char *argv[])
     return 0;
   }
   cout<<"scene file: "<<std::string(argv[2])<<endl;
+  //create platform
+  createPlatform();
+  scene.addMesh(platV, platF, platT, 10000.0, true, platCOM, platOrientation);
+  
+  //load scene from file
   scene.loadScene(std::string(argv[1]),std::string(argv[2]));
 
-  //Set air drag
-  cout << "Set air drag: ";
-  cin >> airDrag;
-
-  //Set friction coeff
-  cout << "Set friction coeff: ";
-  cin >> frictionCoeff;
-  
-  //create platform
-  MatrixXd platV;
-  MatrixXi platF;
-  RowVector3d platCOM;
-  RowVector4d platOrientation;
-  createPlatform(platV, platF, platCOM, platOrientation);
-  
-  scene.addRigidObject(platV, platF, 10000.0, true, platCOM, platOrientation);
-  scene.updateScene(0.0, CRCoeff, V,F, airDrag, frictionCoeff);
+  scene.updateScene(0.0, CRCoeff);
   
   // Viewer Settings
-  mgpViewer.data().set_mesh(V,F);
+  for (int i=0;i<scene.meshes.size();i++){
+    if (i!=0)
+      mgpViewer.append_mesh();
+    //mgpViewer.data_list[i].set_mesh(scene.meshes[i].currV, scene.meshes[i].F);
+  }
+  //mgpViewer.core.align_camera_center(scene.meshes[0].currV);
+  
+  
   mgpViewer.callback_pre_draw = &pre_draw;
   mgpViewer.callback_key_down = &key_down;
   mgpViewer.core.is_animating = false;
   mgpViewer.core.animation_max_fps = 50.;
-  
+  updateMeshes(mgpViewer);
   CustomMenu menu;
   mgpViewer.plugins.push_back(&menu);
   
-  
   cout<<"Press [space] to toggle continuous simulation" << endl;
   cout<<"Press 'S' to advance time step-by-step"<<endl;
+  
   mgpViewer.launch();
+ 
 }
-
