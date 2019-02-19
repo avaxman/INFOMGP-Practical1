@@ -175,11 +175,15 @@ The inverse inertia tensor you get from `initStaticProperties` is **not after ap
 
 ##Submission
 
-The entire code of the practical has to be submitted in a zip file to the designated submission server that will be announced. The deadline is **5/Mar/2019 09:00AM**.
+The entire code of the practical has to be submitted in a zip file to the lecturer by E-mail. The deadline is **5/Mar/2019 09:00AM**. Students who have not submitted the practical by that time **will not be checked** in the session.
 
 The practical must be done **in pairs**. Doing it alone requires a-priori permission. Any other combination (more than 2 people, or any number not in $\mathbb{N}$) is not allowed.
 
-The practical will be checked during the slot for the lecture time at the deadline date. Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. The registration for time slots will appear soon. The students often come with their own computers, and in this case you must come with an operating exercise, compiled already in release mode, and working on all given scene files. **Note:** this semester the course is large, and therefore the checking times will be strict. If you cannot come with your own computer, tell me in advance, and I will compile them on mine beforehand.
+The practical will be checked during the slot for the lecture time at the deadline date (instead of a lecture that day). Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the practical. 
+
+The students often come with their own computers, and in this case you must come with an operating executable, compiled already in *release* mode, and working on all given scene files. **Note:** this semester the course is large, and therefore the checking times will be strict. If you cannot come with your own computer, tell me in advance, and I will compile them on mine beforehand.
+
+The registration for time slots is in our [public sheet](https://docs.google.com/spreadsheets/d/1Zeo2mPu_wv9xjMrAFdzhcTyMGLOpsJqtaf_4Y4oSp2I/edit#gid=1738095803) in the ``Time Slots - Practical 1`` tab. You are not obligated to write your own explicit names---if you do not wish to do so, just write "occupied" and tell me by E-mail who you are and in which slot. Please do not change other people's time choices without their consent.
 
 ##Frequently Asked Questions
 
@@ -188,6 +192,25 @@ Here are detailed answers to common questions. Please read through whenever ou h
 <span style="color:blue">Q:</span> I am getting "alignment" errors when compiling in Windows.
 <span style="color:blue">A:</span> Delete everything, and re-install using 64-bit configuration in `cmake-gui` from a fresh copy. If you find it doesn't work from the box, contact the Lecturer. Do not install other non-related things, or try to alter the cmake.
 
+
+<span style="color:blue">Q:</span> Why is the demo not working out of the box?
+<span style="color:blue">A:</span>: with the same parameters as your input program: infomgp_practical1 "folder_name_without_slash" "name of txt scene files".
+
+<span style="color:blue">Q:</span> How do I do inverse mass weighting for linear interpenetration?
+<span style="color:blue">A:</span>: Given two objects with masses $m_1,m_2$ interpenetrating in mutual distance $d$, their individual corrections need to be $d_1=\frac{d \cdot m_1}{m_1+m_2}$ and respectively for $d_2$. Note that: 1) the lighter object needs to move more (that's why it's inverse) 2) if one object is fixed, it's like it has infinite mass, and the other object moves all the way back.
+
+
+The practical will be checked during a special session in the deadline date . Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. This will typically be a double session in our regular slot B; check the calendar. 
+
+##Frequently Asked Questions
+
+Here are detailed answers to common questions. Please read through whenever you have a problem, since in most cases someone else would have had it as well.
+
+<span style="color:blue">Q:</span> I am getting "alignment" errors when compiling in Windows.
+<span style="color:blue">A:</span> Delete everything, and re-install using 64-bit configuration in `cmake-gui` from a fresh copy. If you find it doesn't work from the box, contact the Lecturer. Do not install other non-related things, or try to alter the cmake. 
+
+<span style="color:blue">Q:</span> I have an angular velocity $\overline{\omega}$, how do I integrate it?
+<span style="color:blue">A:</span> <span style="color:red">Changed answer</span>: this is fully explained in class (Lecture 5).
 
 
 #Good work!
