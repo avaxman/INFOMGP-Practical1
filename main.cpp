@@ -15,6 +15,8 @@ float currTime = 0;
 //initial values
 float timeStep = 0.02;
 float CRCoeff= 1.0;
+double airDrag = 0;
+double frictionCoeff = 0;
 
 Scene scene;
 
@@ -59,7 +61,7 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier
   if (key == 'S')
   {
     if (!viewer.core.is_animating){
-      scene.updateScene(timeStep, CRCoeff, V,F);
+      scene.updateScene(timeStep, CRCoeff, V,F, airDrag, frictionCoeff);
       currTime+=timeStep;
       std::cout <<"currTime: "<<currTime<<std::endl;
       return true;
@@ -75,7 +77,7 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer)
   using namespace std;
   
   if (viewer.core.is_animating){
-    scene.updateScene(timeStep, CRCoeff, V,F);
+    scene.updateScene(timeStep, CRCoeff, V,F, airDrag, frictionCoeff);
     currTime+=timeStep;
     //cout <<"currTime: "<<currTime<<endl;
   }
@@ -121,6 +123,14 @@ int main(int argc, char *argv[])
   }
   cout<<"scene file: "<<std::string(argv[2])<<endl;
   scene.loadScene(std::string(argv[1]),std::string(argv[2]));
+
+  //Set air drag
+  cout << "Set air drag: ";
+  cin >> airDrag;
+
+  //Set friction coeff
+  cout << "Set friction coeff: ";
+  cin >> frictionCoeff;
   
   //create platform
   MatrixXd platV;
@@ -130,7 +140,7 @@ int main(int argc, char *argv[])
   createPlatform(platV, platF, platCOM, platOrientation);
   
   scene.addRigidObject(platV, platF, 10000.0, true, platCOM, platOrientation);
-  scene.updateScene(0.0, CRCoeff, V,F);
+  scene.updateScene(0.0, CRCoeff, V,F, airDrag, frictionCoeff);
   
   // Viewer Settings
   mgpViewer.data().set_mesh(V,F);
