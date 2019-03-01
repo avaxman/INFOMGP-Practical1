@@ -212,5 +212,9 @@ Here are detailed answers to common questions. Please read through whenever you 
 <span style="color:blue">Q:</span> I have an angular velocity $\overline{\omega}$, how do I integrate it?
 <span style="color:blue">A:</span> <span style="color:red">Changed answer</span>: this is fully explained in class (Lecture 5).
 
+<span style="color:blue">Q:</span> cmake fails to clone external dependencies (like glad) although they exist. What is the problem?
+<span style="color:blue">A:</span> This is a rare bug that would suggest some SSL issues with the specific computer. To counter this, clone instead the ``dev`` branch of ``libigl`` independently into the libigl folder, download all the external libraries libigl needs (eigen, glad, glfw, imgui and libigl-imgui) manually, and add them to the external folder.
+Finally, set the LIBIGL_SKIP_DOWNLOAD variable to ON (```cmake -DLIBIGL_SKIP_DOWNLOAD=ON ..```), then proceeded to run CMake normally from there. 
+
 
 #Good work!
