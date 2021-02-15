@@ -1,8 +1,8 @@
 # Practical 1: Rigid-Body Simulation
 
-##Handout date: 19/Feb/2019.
+##Handout date: 15/Feb/2021.
 
-##Deadline: 5/Mar/2019 09:00AM.
+##Deadline: 4/Mar/2021 09:00AM.
 
 The first practical is about simulating the motion of rigid bodies, and their interactions through collision resolution. The objectives of the practical are:
 
@@ -26,7 +26,7 @@ The environment is already configured to run in a time loop, where it detects co
 The practical includes the following basic mandatory requirements:
 
 
-1. For every time step, integrate the accelerations (linear and angular) into velocities, and the velocities into positions and orientations. Use an *Euler forward scheme*, as learned in class (Lecture 5). This requires changing both the position of the COM by the linear velocity, and the orientation by the angular velocity (Lecture 3). the time step difference $\Delta t$ is given by the GUI, and controllable by the menu.
+1. For every time step, integrate the accelerations (linear and angular) into velocities, and the velocities into positions and orientations. Use a *Semi-implicit Euler scheme*, as learned in class (Lecture 5)---first integrate velocity, then position with the new velocity. This requires changing both the position of the COM by the linear velocity, and the orientation by the angular velocity (Lecture 3). the time step difference $\Delta t$ is given by the GUI, and controllable by the menu.
 <br />
 2. For every time step, resolve interpenetration (Lecture 4) *linearly*. The means, given the penetration point, depth, and normal, move the objects apart linearly so they are only tangent. You may assume there is a single point of contact, and not required to solve multiple interpenetrations in the iterative manner.
 <br />
@@ -79,7 +79,7 @@ You do not need to acquaint yourself much with any dependency, nor install anyth
 
 ##Working with the repository
 
-All the code you need to update is in the ``practical1`` folder. Please do not attempt to commit any changes to the repository. <span style="color:red">You may ONLY fork the repository for your convenience and work on it if you can somehow make the forked repository PRIVATE afterwards</span>. Solutions to the practical which are published online in any public manner will **disqualify** the students! submission will be done in the "classical" department style of submission servers, published separately.
+All the code you need to update is in the ``practical1`` folder. Please do not attempt to commit any changes to the repository. <span style="color:red">You may ONLY fork the repository for your convenience and work on it if you can somehow make the forked repository PRIVATE afterwards</span>. Solutions to the practical which are published online in any public manner will **disqualify** the students! submission will be done through Blackboard, published separately.
 
 ##The coding environment for the tasks
 
@@ -175,7 +175,7 @@ The inverse inertia tensor you get from `initStaticProperties` is **not after ap
 
 ##Submission
 
-The entire code of the practical has to be submitted in a zip file to the lecturer by E-mail. The deadline is **5/Mar/2019 09:00AM**. Students who have not submitted the practical by that time **will not be checked** in the session.
+The entire code of the practical has to be submitted in a zip file to the lecturer by E-mail. The deadline is **4/Mar/2021 09:00AM**. Students who have not submitted the practical by that time **will not be checked** in the session.
 
 The practical must be done **in pairs**. Doing it alone requires a-priori permission. Any other combination (more than 2 people, or any number not in $\mathbb{N}$) is not allowed.
 
@@ -194,13 +194,13 @@ Here are detailed answers to common questions. Please read through whenever ou h
 
 
 <span style="color:blue">Q:</span> Why is the demo not working out of the box?
-<span style="color:blue">A:</span>: with the same parameters as your input program: infomgp_practical1 "folder_name_without_slash" "name of txt scene files".
+<span style="color:blue">A:</span>: with the same parameters as your input program: infomgp_practical1 "folder_name_without_slash" "name of txt scene files". Note that both the practical and the OSX demo don't have the big, unnecessary menu. The Windows demo will be updated accordingly, but the functionality is otherwise exactly the same.
 
 <span style="color:blue">Q:</span> How do I do inverse mass weighting for linear interpenetration?
-<span style="color:blue">A:</span>: Given two objects with masses $m_1,m_2$ interpenetrating in mutual distance $d$, their individual corrections need to be $d_1=\frac{d \cdot m_1}{m_1+m_2}$ and respectively for $d_2$. Note that: 1) the lighter object needs to move more (that's why it's inverse) 2) if one object is fixed, it's like it has infinite mass, and the other object moves all the way back.
+<span style="color:blue">A:</span>: Given two objects with masses $m_1,m_2$ interpenetrating in mutual distance $d$, their individual corrections need to be $d_1=\frac{d \cdot m_2}{m_1+m_2}$ and respectively for $d_2$. Note that: 1) the lighter object needs to move more (that's why it's *inverse* mass weighting) 2) if one object is fixed, it's like it has infinite mass, and the other object moves the entire of $d$ back alone.
 
 
-The practical will be checked during a special session in the deadline date . Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. This will typically be a double session in our regular slot B; check the calendar. 
+The practical will be checked during a special session in the deadline date . Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. This will typically be a double session in our regular slot B; check the roster on Blackboard. 
 
 ##Frequently Asked Questions
 
