@@ -64,7 +64,7 @@ void updateMeshes(igl::opengl::glfw::Viewer &viewer)
 {
   RowVector3d platColor; platColor<<0.8,0.8,0.8;
   RowVector3d meshColor; meshColor<<0.8,0.2,0.2;
-  viewer.core.align_camera_center(scene.meshes[0].currV);
+  
   for (int i=0;i<scene.meshes.size();i++){
     viewer.data_list[i].clear();
     viewer.data_list[i].set_mesh(scene.meshes[i].currV, scene.meshes[i].F);
@@ -75,15 +75,18 @@ void updateMeshes(igl::opengl::glfw::Viewer &viewer)
   viewer.data_list[0].show_lines=false;
   viewer.data_list[0].set_colors(platColor.replicate(scene.meshes[0].F.rows(),1));
   viewer.data_list[0].set_face_based(true);
-  //viewer.core.align_camera_center(scene.meshes[0].currV);
+  
+  viewer.core().align_camera_center(scene.meshes[0].currV);
 }
+
+
 
 bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier)
 {
   if (key == ' ')
   {
-    viewer.core.is_animating = !viewer.core.is_animating;
-    if (viewer.core.is_animating)
+    viewer.core().is_animating = !viewer.core().is_animating;
+    if (viewer.core().is_animating)
       cout<<"Simulation running"<<endl;
     else
       cout<<"Simulation paused"<<endl;
@@ -92,7 +95,7 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier
   
   if (key == 'S')
   {
-    if (!viewer.core.is_animating){
+    if (!viewer.core().is_animating){
       scene.updateScene(timeStep, CRCoeff);
       currTime+=timeStep;
       updateMeshes(viewer);
@@ -111,7 +114,7 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer)
   using namespace Eigen;
   using namespace std;
   
-  if (viewer.core.is_animating){
+  if (viewer.core().is_animating){
     scene.updateScene(timeStep, CRCoeff);
     currTime+=timeStep;
     //cout <<"currTime: "<<currTime<<endl;
@@ -128,7 +131,7 @@ class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
   virtual void draw_viewer_menu() override
   {
     // Draw parent menu
-    ImGuiMenu::draw_viewer_menu();
+    //ImGuiMenu::draw_viewer_menu();
     
     // Add new group
     if (ImGui::CollapsingHeader("Algorithm Options", ImGuiTreeNodeFlags_DefaultOpen))
@@ -137,7 +140,7 @@ class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
       
       
       if (ImGui::InputFloat("Time Step", &timeStep)) {
-        mgpViewer.core.animation_max_fps = (((int)1.0/timeStep));
+        mgpViewer.core().animation_max_fps = (((int)1.0/timeStep));
       }
     }
   }
@@ -177,15 +180,16 @@ int main(int argc, char *argv[])
   
   mgpViewer.callback_pre_draw = &pre_draw;
   mgpViewer.callback_key_down = &key_down;
-  mgpViewer.core.is_animating = false;
-  mgpViewer.core.animation_max_fps = 50.;
-  updateMeshes(mgpViewer);
+  mgpViewer.core().is_animating = false;
+  mgpViewer.core().animation_max_fps = 50.;
   CustomMenu menu;
   mgpViewer.plugins.push_back(&menu);
   
   cout<<"Press [space] to toggle continuous simulation" << endl;
   cout<<"Press 'S' to advance time step-by-step"<<endl;
   
+  updateMeshes(mgpViewer);
   mgpViewer.launch();
+ 
  
 }
