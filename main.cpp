@@ -11,7 +11,7 @@ Eigen::MatrixXi F;
 igl::opengl::glfw::Viewer mgpViewer;
 
 float currTime = 0;
-
+bool animationHack;  //fixing the weird camera bug in libigl
 //initial values
 float timeStep = 0.02;
 float CRCoeff= 1.0;
@@ -115,9 +115,12 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer)
   using namespace std;
   
   if (viewer.core().is_animating){
-    scene.updateScene(timeStep, CRCoeff);
+    if (!animationHack)
+      scene.updateScene(timeStep, CRCoeff);
+    else
+      viewer.core().is_animating=false;
+    animationHack=false;
     currTime+=timeStep;
-    //cout <<"currTime: "<<currTime<<endl;
     updateMeshes(viewer);
   }
  
@@ -137,8 +140,6 @@ class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
     if (ImGui::CollapsingHeader("Algorithm Options", ImGuiTreeNodeFlags_DefaultOpen))
     {
       ImGui::InputFloat("CR Coeff",&CRCoeff,0,0,3);
-      
-      
       if (ImGui::InputFloat("Time Step", &timeStep)) {
         mgpViewer.core().animation_max_fps = (((int)1.0/timeStep));
       }
@@ -180,16 +181,16 @@ int main(int argc, char *argv[])
   
   mgpViewer.callback_pre_draw = &pre_draw;
   mgpViewer.callback_key_down = &key_down;
-  mgpViewer.core().is_animating = false;
+  mgpViewer.core().is_animating = true;
+  animationHack = true;
   mgpViewer.core().animation_max_fps = 50.;
+
   CustomMenu menu;
   mgpViewer.plugins.push_back(&menu);
   
   cout<<"Press [space] to toggle continuous simulation" << endl;
   cout<<"Press 'S' to advance time step-by-step"<<endl;
-  
   updateMeshes(mgpViewer);
   mgpViewer.launch();
- 
- 
+  
 }
