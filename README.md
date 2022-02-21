@@ -1,8 +1,8 @@
 # Practical 1: Rigid-Body Simulation
 
-##Handout date: 15/Feb/2021.
+##Handout date: 21/Feb/2022.
 
-##Deadline: 4/Mar/2021 09:00AM.
+##Deadline: 8/Mar/2022 09:00AM.
 
 The first practical is about simulating the motion of rigid bodies, and their interactions through collision resolution. The objectives of the practical are:
 
@@ -26,7 +26,7 @@ The environment is already configured to run in a time loop, where it detects co
 The practical includes the following basic mandatory requirements:
 
 
-1. For every time step, integrate the accelerations (linear and angular) into velocities, and the velocities into positions and orientations. Use a *Semi-implicit Euler scheme*, as learned in class (Lecture 5)---first integrate velocity, then position with the new velocity. This requires changing both the position of the COM by the linear velocity, and the orientation by the angular velocity (Lecture 3). the time step difference $\Delta t$ is given by the GUI, and controllable by the menu.
+1. For every time step, integrate the accelerations (linear and angular) into velocities, and the velocities into positions and orientations. Use a *Semi-implicit Euler scheme*, as learned in class (Lecture 5)---first integrate velocity, then position with the new velocity. This requires changing both the position of the COM by the linear velocity, and the orientation by the angular velocity (Lecture 3). The time step difference $\Delta t$ is given by the GUI, and controllable by the menu.
 <br />
 2. For every time step, resolve interpenetration (Lecture 4) *linearly*. The means, given the penetration point, depth, and normal, move the objects apart linearly so they are only tangent. You may assume there is a single point of contact, and not required to solve multiple interpenetrations in the iterative manner.
 <br />
@@ -36,7 +36,7 @@ See below for details on where to do all that in the code.
 
 ###Extensions
 
-The above will earn you $70\%$ of the grade. To get a full $100$, you must choose 2 of these 6 extension options, and augment the practical. Some will require minor adaptations to the GUI or the function structure which are easy to do. Each extension will earn you $15\%$, and the exact grading will commensurate with the difficulty. Note that this means that all extensions are equal in grade; if you take on a hard extension, it's your own challenge to complete it well.
+The above will earn you $70\%$ of the grade. To get a full $100$, you must choose $2$ of these $6$ extension options, and augment the practical. Some will require minor adaptations to the GUI or the function structure which are easy to do. Each extension will earn you $15\%$, and the exact grading will commensurate with the difficulty. Note that this means that all extensions are equal in grade; if you take on a hard extension, it's your own challenge to complete it well.
 
 1. Add low-velocity drag forces in the air (Lecture 1). You should use the *total velocity* (the entire velocity of a point from linear and angular velocity), and a drag coefficient which is controllable by the user. **Level: easy**.
  <br />
@@ -56,13 +56,13 @@ You may invent your own extension as substitute to **one** in the list above, bu
 
 ##Installation
 
-The skeleton uses the following dependencies: [libigl](http://libigl.github.io/libigl/), and consequently [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), for the representation and viewing of geometry, and [libccd](https://github.com/danfis/libccd) for collision detection. libigl viewer is using [dear imGui](https://github.com/ocornut/imgui) for the menu. Everything is bundled as either submodules, or just incorporated code within the environment, and you do not have to take care of any installation details. To get the library, use:
+The skeleton uses the following dependencies: [libigl](http://libigl.github.io/libigl/), and consequently [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), for the representation and viewing of geometry, and [libccd](https://github.com/danfis/libccd) for collision detection. libigl viewer is using [dear imGui](https://github.com/ocornut/imgui) for the menu. Everything is bundled as either submodules, or just incorporated code within the environment, and you do not have to take care of any installation details. To get our full practical library, use:
 
 ```bash
 git clone --recursive https://github.com/avaxman/INFOMGP-Practical1.git
 ```
 
-to compile the environment, go into the `practical1` folder and enter in a terminal (macOS/Linux):
+To compile the environment, go into the `practical1` folder and enter in a terminal (macOS/Linux):
 
 ```bash
 mkdir build
@@ -169,13 +169,13 @@ You do not have to compute the entire algorithmic environment from scratch. The 
 
 1. Collision detection, as explained above.
 <br />
-2. A function `initStaticProperties` computes the original COM and the inverse inertia tensor for each original MESH files, and is called by the `Mesh` constructor. you do not need the COM it computes; the constructor translates the object (`origV` coordinates) to the origin, so it always has $COM=\left(0,0,0\right)$. The constructor also initializes `currV` as a translation and rotation of `origV` to fit the prescribed values from the scene file.
+2. A function `initStaticProperties` computes the original COM and the inverse inertia tensor for each original MESH files, and is called by the `Mesh` constructor. You do not need the COM it computes; the constructor translates the object (`origV` coordinates) to the origin, so it always has $COM=\left(0,0,0\right)$. The constructor also initializes `currV` as a translation and rotation of `origV` to fit the prescribed values from the scene file.
 
 The inverse inertia tensor you get from `initStaticProperties` is **not after applying the orientation, not even that in the scene file**. That is, what you get is the inverse inertia tensor of ``origV`` around its COM. You will have to compute the inverse inertia tensor for a given `currV`, according to the its current orientation, and it is always then around the COM of the moving object. See Lecture 3 for how to do that efficiently, and be careful to apply the correct rotation!
 
 ##Submission
 
-The entire code of the practical has to be submitted in a zip file to the lecturer by E-mail. The deadline is **4/Mar/2021 09:00AM**. Students who have not submitted the practical by that time **will not be checked** in the session.
+The entire code of the practical has to be submitted in a zip file to the lecturer by E-mail. The deadline is **8/Mar/2022 09:00AM**. Students who have not submitted the practical by that time **will not be checked** in the session.
 
 The practical must be done **in pairs**. Doing it alone requires a-priori permission. Any other combination (more than 2 people, or any number not in $\mathbb{N}$) is not allowed.
 
@@ -183,7 +183,11 @@ The practical will be checked during the slot for the lecture time at the deadli
 
 The students often come with their own computers, and in this case you must come with an operating executable, compiled already in *release* mode, and working on all given scene files. **Note:** this semester the course is large, and therefore the checking times will be strict. If you cannot come with your own computer, tell me in advance, and I will compile them on mine beforehand.
 
-The registration for time slots is in our [public sheet](https://docs.google.com/spreadsheets/d/1Zeo2mPu_wv9xjMrAFdzhcTyMGLOpsJqtaf_4Y4oSp2I/edit#gid=1738095803) in the ``Time Slots - Practical 1`` tab. You are not obligated to write your own explicit names---if you do not wish to do so, just write "occupied" and tell me by E-mail who you are and in which slot. Please do not change other people's time choices without their consent.
+The registration for time slots is in our [public sheet](https://docs.google.com/spreadsheets/d/1Zeo2mPu_wv9xjMrAFdzhcTyMGLOpsJqtaf_4Y4oSp2I/edit#gid=1738095803) in the ``Time Slots - Practical 1`` tab. You are not obligated to write your own explicit names---if you do not wish to do so, just write "occupied" and tell me by E-mail who you are and in which slot. Please do not change other people's time choices without their consent. **It might be that there are not enough slots since the course is unusually big this year---if the slots are all occupied, I will keep you posted on what to do. The deadline for submission will not change however!**
+
+
+The practical will be checked during a special session in the deadline date . Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. This will typically be a double session in our regular slot B; check the roster on Blackboard. 
+
 
 ##Frequently Asked Questions
 
@@ -194,23 +198,10 @@ Here are detailed answers to common questions. Please read through whenever ou h
 
 
 <span style="color:blue">Q:</span> Why is the demo not working out of the box?
-<span style="color:blue">A:</span>: with the same parameters as your input program: infomgp_practical1 "folder_name_without_slash" "name of txt scene files". Note that both the practical and the OSX demo don't have the big, unnecessary menu. The Windows demo will be updated accordingly, but the functionality is otherwise exactly the same.
+<span style="color:blue">A:</span>: with the same parameters as your input program: infomgp_practical1 "folder_name_without_slash" "name of txt scene files".
 
 <span style="color:blue">Q:</span> How do I do inverse mass weighting for linear interpenetration?
 <span style="color:blue">A:</span>: Given two objects with masses $m_1,m_2$ interpenetrating in mutual distance $d$, their individual corrections need to be $d_1=\frac{d \cdot m_2}{m_1+m_2}$ and respectively for $d_2$. Note that: 1) the lighter object needs to move more (that's why it's *inverse* mass weighting) 2) if one object is fixed, it's like it has infinite mass, and the other object moves the entire of $d$ back alone.
-
-
-The practical will be checked during a special session in the deadline date . Every pair will have 10 minutes to shortly present their practical, and be tested by the lecturer with some fresh scene files. In addition, the lecturer will ask every person a short question that should be easy to answer if this person was fully involved in the exercise. This will typically be a double session in our regular slot B; check the roster on Blackboard. 
-
-##Frequently Asked Questions
-
-Here are detailed answers to common questions. Please read through whenever you have a problem, since in most cases someone else would have had it as well.
-
-<span style="color:blue">Q:</span> I am getting "alignment" errors when compiling in Windows.
-<span style="color:blue">A:</span> Delete everything, and re-install using 64-bit configuration in `cmake-gui` from a fresh copy. If you find it doesn't work from the box, contact the Lecturer. Do not install other non-related things, or try to alter the cmake. 
-
-<span style="color:blue">Q:</span> I have an angular velocity $\overline{\omega}$, how do I integrate it?
-<span style="color:blue">A:</span> <span style="color:red">Changed answer</span>: this is fully explained in class (Lecture 5).
 
 <span style="color:blue">Q:</span> cmake fails to clone external dependencies (like glad) although they exist. What is the problem?
 <span style="color:blue">A:</span> This is a rare bug that would suggest some SSL issues with the specific computer. To counter this, clone instead the ``dev`` branch of ``libigl`` independently into the libigl folder, download all the external libraries libigl needs (eigen, glad, glfw, imgui and libigl-imgui) manually, and add them to the external folder.
