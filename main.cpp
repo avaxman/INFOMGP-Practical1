@@ -1,7 +1,7 @@
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
-#include <imgui/imgui.h>
 #include <iostream>
 #include "scene.h"
 
@@ -139,7 +139,7 @@ class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
     // Add new group
     if (ImGui::CollapsingHeader("Algorithm Options", ImGuiTreeNodeFlags_DefaultOpen))
     {
-      ImGui::InputFloat("CR Coeff",&CRCoeff,0,0,3);
+      ImGui::InputFloat("CR Coeff", &CRCoeff, 0, 0, "%.2f");
       if (ImGui::InputFloat("Time Step", &timeStep)) {
         mgpViewer.core().animation_max_fps = (((int)1.0/timeStep));
       }
@@ -186,7 +186,9 @@ int main(int argc, char *argv[])
   mgpViewer.core().animation_max_fps = 50.;
 
   CustomMenu menu;
-  mgpViewer.plugins.push_back(&menu);
+  igl::opengl::glfw::imgui::ImGuiPlugin plugin;
+  mgpViewer.plugins.push_back(&plugin);
+  plugin.widgets.push_back(&menu);
   
   cout<<"Press [space] to toggle continuous simulation" << endl;
   cout<<"Press 'S' to advance time step-by-step"<<endl;
