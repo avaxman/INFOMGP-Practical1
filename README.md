@@ -175,7 +175,7 @@ The inverse inertia tensor you get from `initStaticProperties` is **not after ap
 
 ##Submission
 
-The entire code of the practical has to be submitted in a zip file to the lecturer by E-mail. The deadline is **8/Mar/2022 09:00AM**. Students who have not submitted the practical by that time **will not be checked** in the session.
+The entire code of the practical has to be submitted in a zip file *on blackboard (note: not on E-mail as previously said!)*. The deadline is **8/Mar/2022 09:00AM**. Students who have not submitted the practical by that time **will not be checked** in the session.
 
 The practical must be done **in pairs**. Doing it alone requires a-priori permission. Any other combination (more than 2 people, or any number not in $\mathbb{N}$) is not allowed.
 
